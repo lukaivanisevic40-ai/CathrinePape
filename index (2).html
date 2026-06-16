@@ -1,0 +1,649 @@
+<!--
+  CATHRINE PAPE - COACHING WEBSITE
+  Single-file site. Ready to open, host, or plug into Claude Design.
+
+  HOW TO PERSONALIZE:
+  Every spot that MUST become real is tagged with a comment like this:  <!-- REPLACE: ... -->
+  Search the file for the word REPLACE to find them all.
+  The photo blocks, the testimonials, and the contact details are intentionally
+  shown as obvious placeholders so nobody mistakes sample text for the real thing.
+
+  DESIGN DIRECTION (so you can keep it consistent if you extend it):
+  - Theme: "transition" = the space between two states. Signature = a From -> To line.
+  - Emotional arc: light hero, dark "crossroads" band (the hard middle), light again
+    (clarity), dark closing band (the invitation forward).
+  - Palette: eucalyptus stone background, deep-forest ink text, warm gold accent.
+  - Type: Instrument Serif (display) + Hanken Grotesk (body).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cathrine Pape · Transition Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..800;1,400..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E7EBE3;        /* soft eucalyptus stone */
+    --surface:#F3F5EF;   /* lifted cards */
+    --ink:#1E2722;       /* near-black forest, primary text */
+    --ink-soft:#48524D;  /* secondary text */
+    --muted:#868C81;     /* eyebrows / captions */
+    --line:#C8CEC1;      /* hairlines */
+    --deep:#15201A;      /* dark band background */
+    --deep-soft:#22302A; /* dark band cards */
+    --accent:#B0822F;    /* warm gold, decorative + on dark */
+    --accent-soft:#D8BF85;/* lighter gold for dark backgrounds */
+    --cream:#EFEDE2;     /* text on dark */
+    --maxw:1180px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  h1,h2,h3{margin:0;font-weight:400}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .section{padding:104px 0}
+  @media(max-width:720px){.section{padding:68px 0}}
+
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:.2px}
+  .eyebrow{
+    font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;
+    color:var(--muted);display:inline-flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);display:inline-block}
+
+  /* ---------- Signature: the journey line (From -> To) ---------- */
+  .journey{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .journey .node{display:flex;flex-direction:column;gap:4px;max-width:280px}
+  .journey .node .tag{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--muted)}
+  .journey .node .val{font-size:16px;color:var(--ink-soft);line-height:1.4}
+  .journey .track{flex:1;min-width:80px;height:1px;background:var(--line);position:relative}
+  .journey .track::before{content:"";position:absolute;left:0;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-2px,-50%)}
+  .journey .track::after{content:"→";position:absolute;right:-4px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:18px;line-height:1}
+  .journey.on-dark .node .tag,.journey.on-dark .node .val{color:#A9B2AB}
+  .journey.on-dark .track{background:#33403A}
+  .journey.on-dark .track::before,.journey.on-dark .track::after{color:var(--accent-soft)}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;
+    font-family:inherit;font-size:15px;font-weight:600;letter-spacing:.01em;
+    padding:14px 26px;border-radius:2px;transition:transform .25s var(--ease),background .25s,color .25s;
+  }
+  .btn-primary{background:var(--ink);color:var(--cream)}
+  .btn-primary:hover{transform:translateY(-2px);background:#0f1712}
+  .btn-ghost{background:transparent;color:var(--ink);padding:14px 4px;border-radius:0;border-bottom:1px solid var(--accent)}
+  .btn-ghost:hover{color:var(--accent)}
+  .on-dark .btn-primary{background:var(--accent-soft);color:var(--deep)}
+  .on-dark .btn-primary:hover{background:#e7d4a4}
+  .on-dark .btn-ghost{color:var(--cream);border-bottom-color:var(--accent-soft)}
+
+  /* ---------- Nav ---------- */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(231,235,227,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{font-family:"Instrument Serif",serif;font-size:23px;letter-spacing:.3px}
+  .brand span{color:var(--accent)}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{font-size:14.5px;color:var(--ink-soft);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{font-size:14px;font-weight:600;padding:10px 20px;background:var(--ink);color:var(--cream);border-radius:2px;transition:transform .25s var(--ease)}
+  .nav-cta:hover{transform:translateY(-2px)}
+  .burger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px}
+  .burger span{width:24px;height:2px;background:var(--ink);display:block;transition:.3s}
+  @media(max-width:860px){
+    .nav-links{position:fixed;inset:64px 0 auto 0;background:var(--bg);flex-direction:column;align-items:flex-start;gap:0;padding:8px 28px 24px;border-bottom:1px solid var(--line);transform:translateY(-130%);transition:transform .35s var(--ease)}
+    .nav-links.open{transform:translateY(0)}
+    .nav-links a{width:100%;padding:14px 0;border-bottom:1px solid var(--line);font-size:17px}
+    .nav-links .nav-cta{margin-top:14px;width:100%;text-align:center;color:var(--cream)}
+    .burger{display:flex}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{padding:84px 0 92px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;align-items:center}
+  .hero h1{font-family:"Instrument Serif",serif;font-size:clamp(42px,6.4vw,82px);line-height:1.02;letter-spacing:-.5px;margin:22px 0 0}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero .lede{font-size:19px;color:var(--ink-soft);max-width:50ch;margin:26px 0 0}
+  .hero-cta{display:flex;align-items:center;gap:22px;margin-top:34px;flex-wrap:wrap}
+  .hero .journey{margin-top:46px;max-width:560px}
+
+  /* photo placeholder */
+  .photo{
+    position:relative;border-radius:3px;overflow:hidden;background:
+      linear-gradient(135deg,#cfd6c8,#dde2d6 60%,#c6cdbe);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;text-align:center;
+  }
+  .photo .ph-label{padding:18px 22px;color:#5d665b;font-size:13px;letter-spacing:.04em;line-height:1.5}
+  .photo .ph-label strong{display:block;font-family:"Instrument Serif",serif;font-size:20px;color:#3e463d;margin-bottom:4px;font-weight:400}
+  .photo-hero{aspect-ratio:4/5}
+  .photo-hero::after{content:"";position:absolute;inset:0;box-shadow:inset 0 -60px 70px -40px rgba(21,32,26,.35)}
+  @media(max-width:860px){
+    .hero-grid{grid-template-columns:1fr;gap:36px}
+    .photo-hero{aspect-ratio:3/3.4;max-width:420px}
+  }
+
+  /* ---------- Crossroads (dark band) ---------- */
+  .band-dark{background:var(--deep);color:var(--cream)}
+  .crossroads h2{font-family:"Instrument Serif",serif;font-size:clamp(30px,4.4vw,52px);line-height:1.08;letter-spacing:-.3px;max-width:18ch;margin:20px 0 0}
+  .crossroads .eyebrow{color:var(--accent-soft)}
+  .crossroads .eyebrow::before{background:var(--accent-soft)}
+  .signs{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:54px}
+  .sign{border-top:1px solid #33403A;padding-top:20px}
+  .sign h3{font-size:18px;font-weight:600;color:var(--cream);margin-bottom:8px}
+  .sign p{font-size:15.5px;color:#A9B2AB;margin:0;line-height:1.55}
+  .crossroads .turn{margin-top:50px;font-size:19px;color:#cfd6cd;max-width:60ch}
+  .crossroads .turn b{color:var(--accent-soft);font-weight:600}
+  @media(max-width:760px){.signs{grid-template-columns:1fr;gap:24px}}
+
+  /* ---------- About ---------- */
+  .about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:start}
+  .about h2{font-family:"Instrument Serif",serif;font-size:clamp(30px,4.2vw,50px);line-height:1.08;margin:18px 0 24px;letter-spacing:-.3px}
+  .about p{color:var(--ink-soft);margin:0 0 18px;max-width:60ch}
+  .about p:last-child{margin-bottom:0}
+  .about .sig{font-family:"Instrument Serif",serif;font-style:italic;font-size:26px;color:var(--ink);margin-top:30px}
+  .credentials{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .credentials span{font-size:13px;color:var(--ink-soft);border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:2px}
+  .photo-about{aspect-ratio:4/4.7;position:sticky;top:96px}
+  @media(max-width:860px){
+    .about-grid{grid-template-columns:1fr;gap:34px}
+    .photo-about{position:relative;max-width:380px}
+  }
+
+  /* ---------- Approach (a real sequence -> numbering is earned) ---------- */
+  .approach h2{font-family:"Instrument Serif",serif;font-size:clamp(30px,4.2vw,50px);line-height:1.06;margin:18px 0 0;letter-spacing:-.3px;max-width:16ch}
+  .approach .intro{color:var(--ink-soft);max-width:54ch;margin:22px 0 0}
+  .steps{margin-top:60px;display:grid;gap:0}
+  .step{display:grid;grid-template-columns:96px 1fr;gap:32px;padding:34px 0;border-top:1px solid var(--line)}
+  .step:last-child{border-bottom:1px solid var(--line)}
+  .step .num{font-family:"Instrument Serif",serif;font-size:46px;color:var(--accent);line-height:1}
+  .step h3{font-size:22px;font-weight:600;margin-bottom:10px}
+  .step p{color:var(--ink-soft);margin:0;max-width:62ch}
+  @media(max-width:600px){
+    .step{grid-template-columns:1fr;gap:10px;padding:26px 0}
+    .step .num{font-size:38px}
+  }
+
+  /* ---------- Offerings ---------- */
+  .offerings .head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
+  .offerings h2{font-family:"Instrument Serif",serif;font-size:clamp(30px,4.2vw,50px);line-height:1.06;margin:18px 0 0;letter-spacing:-.3px}
+  .offerings .head p{color:var(--ink-soft);max-width:42ch;margin:0}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:54px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:34px 30px;display:flex;flex-direction:column;transition:transform .3s var(--ease),box-shadow .3s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 18px 40px -28px rgba(21,32,26,.5)}
+  .card .kicker{font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:var(--accent);font-weight:600}
+  .card h3{font-family:"Instrument Serif",serif;font-size:30px;margin:14px 0 6px;line-height:1.05}
+  .card .who{font-size:14px;color:var(--muted);margin:0 0 18px}
+  .card ul{list-style:none;padding:0;margin:0 0 26px}
+  .card li{font-size:15px;color:var(--ink-soft);padding:9px 0 9px 24px;position:relative;border-top:1px solid var(--line)}
+  .card li:first-child{border-top:none}
+  .card li::before{content:"";position:absolute;left:0;top:16px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .card .price{font-family:"Instrument Serif",serif;font-size:20px;color:var(--ink);margin:0 0 18px}
+  .card .price small{font-family:"Hanken Grotesk",sans-serif;font-size:13px;color:var(--muted);display:block;letter-spacing:.02em}
+  .card .btn{margin-top:auto;align-self:flex-start}
+  @media(max-width:880px){.cards{grid-template-columns:1fr;max-width:460px}}
+
+  /* ---------- Testimonials ---------- */
+  .quotes-band{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sample-flag{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#a98b3f;background:#f5edd9;border:1px dashed #d8bf85;padding:5px 12px;border-radius:2px;display:inline-block}
+  .quotes{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:34px}
+  .quote{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:34px 32px}
+  .quote .mark{font-family:"Instrument Serif",serif;font-size:54px;color:var(--accent);line-height:.5;display:block;height:24px}
+  .quote p{font-size:18px;color:var(--ink);line-height:1.5;margin:14px 0 22px}
+  .quote .by{display:flex;align-items:center;gap:12px}
+  .quote .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#cfd6c8,#c6cdbe);border:1px solid var(--line);flex:none}
+  .quote .by .name{font-size:14px;font-weight:600;color:var(--ink)}
+  .quote .by .role{font-size:13px;color:var(--muted)}
+  @media(max-width:760px){.quotes{grid-template-columns:1fr}}
+
+  /* ---------- FAQ ---------- */
+  .faq-grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:48px;align-items:start}
+  .faq h2{font-family:"Instrument Serif",serif;font-size:clamp(30px,4.2vw,48px);line-height:1.06;margin:18px 0 0;letter-spacing:-.3px}
+  .faq .aside p{color:var(--ink-soft);margin:18px 0 0;max-width:34ch}
+  .acc{border-top:1px solid var(--line)}
+  .acc-item{border-bottom:1px solid var(--line)}
+  .acc-q{width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;font-size:18px;font-weight:600;color:var(--ink);padding:24px 40px 24px 0;position:relative;display:flex}
+  .acc-q::after{content:"+";position:absolute;right:4px;top:22px;font-size:24px;color:var(--accent);font-weight:400;transition:transform .3s var(--ease)}
+  .acc-item.open .acc-q::after{transform:rotate(45deg)}
+  .acc-a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
+  .acc-a p{color:var(--ink-soft);margin:0;padding:0 30px 26px 0;max-width:64ch}
+  @media(max-width:760px){.faq-grid{grid-template-columns:1fr;gap:24px}}
+
+  /* ---------- Closing CTA (dark, mirrors crossroads) ---------- */
+  .closing{text-align:center}
+  .closing h2{font-family:"Instrument Serif",serif;font-size:clamp(34px,5.4vw,68px);line-height:1.03;letter-spacing:-.4px;max-width:18ch;margin:18px auto 0}
+  .closing h2 em{font-style:italic;color:var(--accent-soft)}
+  .closing .lede{color:#b9c0b9;font-size:19px;max-width:54ch;margin:24px auto 0}
+  .closing .eyebrow{color:var(--accent-soft);justify-content:center}
+  .closing .eyebrow::before{background:var(--accent-soft)}
+  .closing .hero-cta{justify-content:center;margin-top:38px}
+
+  /* ---------- Footer ---------- */
+  footer.site{background:var(--deep);color:#9aa39c;padding:56px 0 40px;border-top:1px solid #2a3630}
+  .foot-grid{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;align-items:flex-start}
+  .foot-brand{font-family:"Instrument Serif",serif;font-size:26px;color:var(--cream)}
+  .foot-brand span{color:var(--accent-soft)}
+  .foot-grid a{color:#9aa39c;font-size:14.5px;transition:color .2s}
+  .foot-grid a:hover{color:var(--cream)}
+  .foot-col{display:flex;flex-direction:column;gap:10px}
+  .foot-col .h{font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:#67726b;margin-bottom:4px}
+  .foot-bottom{max-width:var(--maxw);margin:42px auto 0;padding:22px 28px 0;border-top:1px solid #2a3630;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:#67726b}
+
+  /* ---------- Scroll reveal ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+    .btn,.card,.nav-cta{transition:none}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <!-- REPLACE: confirm exact name / spelling -->
+    <a href="#top" class="brand">Cathrine&nbsp;<span>Pape</span></a>
+    <button class="burger" aria-label="Open menu" aria-expanded="false" id="burger">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#crossroads">Is this you</a>
+      <a href="#about">About</a>
+      <a href="#approach">How it works</a>
+      <a href="#work">Work with me</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact" class="nav-cta">Book a call</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="reveal">
+        <!-- REPLACE: her exact title, e.g. "Life Transition Coach", "Certified Coach (ICF)", etc. -->
+        <span class="eyebrow">Cathrine Pape · Transition Coach</span>
+        <!-- REPLACE optional: the headline is the single most important line on the site.
+             This one is strong and transition-specific. Keep or refine in her voice. -->
+        <h1 class="serif">The bridge between who you were and who you're <em>becoming</em>.</h1>
+        <p class="lede">
+          <!-- REPLACE: one sentence on how she helps, in her words -->
+          Coaching for people standing in the middle of a big change, a career, a relationship,
+          an identity, a chapter ending before the next one is clear. We turn that uncertainty
+          into a direction you can actually move in.
+        </p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-primary">Book a free discovery call</a>
+          <a href="#approach" class="btn btn-ghost">See how we work together</a>
+        </div>
+
+        <!-- SIGNATURE: From -> To -->
+        <div class="journey" aria-hidden="true">
+          <div class="node">
+            <span class="tag">Where you are</span>
+            <span class="val">Overwhelmed, in-between, unsure what's next</span>
+          </div>
+          <div class="track"></div>
+          <div class="node">
+            <span class="tag">Where you're headed</span>
+            <span class="val">Grounded, clear, moving on your own terms</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <!-- REPLACE: swap this placeholder block for Cathrine's hero portrait.
+             Recommended: a warm, eye-level photo, looking toward the headline. -->
+        <div class="photo photo-hero">
+          <div class="ph-label"><strong>Cathrine's photo</strong>Hero portrait goes here<br>(roughly 4:5, warm, eye-level)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CROSSROADS (dark band = the hard middle) ============ -->
+<section class="section band-dark crossroads on-dark" id="crossroads">
+  <div class="wrap reveal">
+    <span class="eyebrow">If you're honest with yourself</span>
+    <h2 class="serif">Something has shifted, and the old map doesn't fit anymore.</h2>
+
+    <div class="signs">
+      <!-- REPLACE: tune these three to the clients she actually works with -->
+      <div class="sign">
+        <h3>You're between chapters</h3>
+        <p>A job, a marriage, a city, a role you built your identity on, ended or is ending, and the next one hasn't arrived.</p>
+      </div>
+      <div class="sign">
+        <h3>You look fine from outside</h3>
+        <p>Everyone thinks you have it handled. Inside, you feel stuck, foggy, and quietly exhausted from holding it together.</p>
+      </div>
+      <div class="sign">
+        <h3>You keep waiting to feel ready</h3>
+        <p>You know what you want, sort of. But every path forward feels risky, and so you stay where it's familiar instead.</p>
+      </div>
+    </div>
+
+    <p class="turn">
+      None of that means you're broken. It means you're <b>in transition</b>, and transition is its own
+      kind of work. With the right person beside you, it stops being something to survive and becomes
+      something you grow through.
+    </p>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="section about" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="reveal">
+        <!-- REPLACE: Cathrine's portrait (a second, more personal photo than the hero) -->
+        <div class="photo photo-about">
+          <div class="ph-label"><strong>Cathrine's photo</strong>About portrait<br>(a warmer, more personal shot)</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">Who I am</span>
+        <h2 class="serif">I coach the part of change nobody prepares you for.</h2>
+        <!-- REPLACE: her real story. This is the most important text to make true.
+             Cover: who she is, what she did before, the moment / reason she became a coach,
+             and what she believes about transition. Three short paragraphs is plenty. -->
+        <p>
+          I'm Cathrine. I work with people in the messy middle of major life change, the stretch
+          between an ending and a beginning where most coaching, and most advice, goes quiet.
+        </p>
+        <p>
+          I came to this work after my own crossing. <em>(Replace with her real turning point:
+          a career change, a personal loss, a reinvention, whatever genuinely led her here.)</em>
+          That experience taught me that you don't think your way out of a transition. You move
+          through it, one honest decision at a time, with someone who can see the whole of you.
+        </p>
+        <p>
+          My approach is calm, direct, and practical. I'll hold space when you need it and ask the
+          hard question when you're ready. No scripts, no jargon, no pretending the in-between is comfortable.
+        </p>
+
+        <p class="sig">Cathrine</p>
+
+        <!-- REPLACE: real credentials / certifications / years / languages. Delete any that don't apply. -->
+        <div class="credentials">
+          <span>Certified Coach</span>
+          <span>10+ years' experience</span>
+          <span>1:1 &amp; group work</span>
+          <span>Online &amp; in person</span>
+          <span>EN / [other languages]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPROACH (a genuine 3-stage sequence) ============ -->
+<section class="section approach band-dark on-dark" id="approach" style="background:var(--deep-soft)">
+  <div class="wrap reveal">
+    <span class="eyebrow" style="color:var(--accent-soft)">How it works</span>
+    <h2 class="serif" style="color:var(--cream)">A way through, in three movements.</h2>
+    <p class="intro" style="color:#b9c0b9">
+      <!-- REPLACE: describe her actual method / process if she has a named one -->
+      Transition has a shape. We work with it instead of against it, moving from clarity, to action,
+      to making the change actually stick.
+    </p>
+
+    <div class="steps">
+      <div class="step" style="border-color:#33403A">
+        <div class="num">01</div>
+        <div>
+          <h3 style="color:var(--cream)">Clarity</h3>
+          <p style="color:#a9b2ab">We name what's really happening, what's ending, what you actually want, and what's been quietly running the show. You leave with a clear picture instead of a fog.</p>
+        </div>
+      </div>
+      <div class="step" style="border-color:#33403A">
+        <div class="num">02</div>
+        <div>
+          <h3 style="color:var(--cream)">Movement</h3>
+          <p style="color:#a9b2ab">We turn clarity into small, real steps you can take this week, not a five-year plan you'll abandon. Momentum, not pressure.</p>
+        </div>
+      </div>
+      <div class="step" style="border-color:#33403A;border-bottom-color:#33403A">
+        <div class="num">03</div>
+        <div>
+          <h3 style="color:var(--cream)">Integration</h3>
+          <p style="color:#a9b2ab">We make the new version of your life durable, so the change holds long after our work together ends, and you can do this again on your own.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OFFERINGS ============ -->
+<section class="section offerings" id="work">
+  <div class="wrap">
+    <div class="head reveal">
+      <div>
+        <span class="eyebrow">Work with me</span>
+        <h2 class="serif">Three ways to begin.</h2>
+      </div>
+      <p>Not sure which fits? Start with a free call and we'll figure it out together.</p>
+    </div>
+
+    <div class="cards">
+      <!-- REPLACE everything in these cards: names, what's included, prices, durations.
+           Prices are placeholders. Keep them or remove the price block entirely. -->
+      <div class="card reveal">
+        <span class="kicker">Most popular</span>
+        <h3>1:1 Coaching</h3>
+        <p class="who">For deep, personal change</p>
+        <ul>
+          <li>Six or twelve weekly sessions</li>
+          <li>A plan built around your transition</li>
+          <li>Voice / message support between sessions</li>
+          <li>Online or in person</li>
+        </ul>
+        <p class="price">From CHF&nbsp;XXX<small>per programme · payment plans available</small></p>
+        <a href="#contact" class="btn btn-primary">Enquire</a>
+      </div>
+
+      <div class="card reveal">
+        <span class="kicker">Group</span>
+        <h3>The Crossing</h3>
+        <p class="who">For going through it alongside others</p>
+        <ul>
+          <li>Small group, eight weeks</li>
+          <li>Live calls plus a private community</li>
+          <li>Structure, accountability, real connection</li>
+          <li>Runs a few times a year</li>
+        </ul>
+        <p class="price">CHF&nbsp;XXX<small>next cohort: [date]</small></p>
+        <a href="#contact" class="btn btn-primary">Join the list</a>
+      </div>
+
+      <div class="card reveal">
+        <span class="kicker">Single session</span>
+        <h3>Clarity Session</h3>
+        <p class="who">For one decision, one breakthrough</p>
+        <ul>
+          <li>One focused 90-minute session</li>
+          <li>For a specific crossroads or choice</li>
+          <li>A written summary you keep</li>
+          <li>No commitment beyond the call</li>
+        </ul>
+        <p class="price">CHF&nbsp;XXX<small>one-off · 90 minutes</small></p>
+        <a href="#contact" class="btn btn-primary">Book it</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section quotes-band" id="results">
+  <div class="wrap reveal">
+    <span class="eyebrow">In their words</span>
+    <div style="margin-top:14px"><span class="sample-flag">Sample testimonials · replace with real client quotes</span></div>
+    <div class="quotes">
+      <!-- REPLACE: real client testimonials with permission. Until then these are clearly flagged samples. -->
+      <div class="quote">
+        <span class="mark">&ldquo;</span>
+        <p>I came in stuck between two lives and left knowing exactly which one was mine. Cathrine never told me what to do, she helped me hear what I already knew.</p>
+        <div class="by">
+          <div class="avatar"></div>
+          <div><div class="name">[Client name]</div><div class="role">[Their role / situation]</div></div>
+        </div>
+      </div>
+      <div class="quote">
+        <span class="mark">&ldquo;</span>
+        <p>Six weeks. That's all it took to go from frozen to actually moving. Calm, sharp, and exactly the right amount of challenge.</p>
+        <div class="by">
+          <div class="avatar"></div>
+          <div><div class="name">[Client name]</div><div class="role">[Their role / situation]</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section faq" id="faq">
+  <div class="wrap">
+    <div class="faq-grid">
+      <div class="aside reveal">
+        <span class="eyebrow">Good to know</span>
+        <h2 class="serif">Questions, answered.</h2>
+        <p>Still unsure about something? Ask me directly on a free call, no pressure.</p>
+      </div>
+      <div class="acc reveal">
+        <!-- REPLACE: answers with her real policies, pricing logic, location, etc. -->
+        <div class="acc-item">
+          <button class="acc-q">Is coaching the same as therapy?</button>
+          <div class="acc-a"><p>No. Therapy often looks at healing the past. Coaching is about moving forward from where you are now. If something deeper comes up, I'll say so and help you find the right support.</p></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">Do we meet online or in person?</button>
+          <div class="acc-a"><p>Both. Most clients work with me online from anywhere. In-person sessions are available in [location]. We'll choose whatever helps you show up most fully.</p></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">How do I know if it's the right time?</button>
+          <div class="acc-a"><p>If you're in the middle of a change and feel stuck, foggy, or quietly overwhelmed, it's the right time. You don't need to have it figured out first. That's the work.</p></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">What happens on the first call?</button>
+          <div class="acc-a"><p>A free, relaxed conversation. You tell me where you are, I share how I'd work with you, and we both decide if it's a fit. No script, no hard sell.</p></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">What does it cost?</button>
+          <div class="acc-a"><p>It depends on the path you choose, with options listed above and payment plans available. We'll talk specifics on the call so it fits your situation.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSING CTA (dark = the invitation forward) ============ -->
+<section class="section band-dark closing on-dark" id="contact">
+  <div class="wrap reveal">
+    <span class="eyebrow">Your next step</span>
+    <h2 class="serif">You don't have to cross this <em>alone</em>.</h2>
+    <p class="lede">
+      Book a free discovery call. Thirty minutes, no commitment, just an honest conversation
+      about where you are and where you'd like to be.
+    </p>
+    <div class="hero-cta">
+      <!-- REPLACE: link to her real booking page (Calendly, Cal.com, etc.) -->
+      <a href="#" class="btn btn-primary">Book your free call</a>
+      <!-- REPLACE: her real email -->
+      <a href="mailto:hello@example.com" class="btn btn-ghost">Or email me directly</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Cathrine&nbsp;<span>Pape</span></div>
+        <p style="margin:14px 0 0;max-width:32ch;font-size:14.5px;color:#9aa39c">Coaching for the space between who you were and who you're becoming.</p>
+      </div>
+      <div class="foot-col">
+        <span class="h">Explore</span>
+        <a href="#about">About</a>
+        <a href="#approach">How it works</a>
+        <a href="#work">Work with me</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <span class="h">Connect</span>
+        <!-- REPLACE: real links / handles, delete what doesn't apply -->
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="#contact">Book a call</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr"></span> Cathrine Pape. All rights reserved.</span>
+      <span>Based in [city] · Working worldwide</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav
+  var burger = document.getElementById('burger');
+  var navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', function(){
+    var open = navLinks.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+  });
+  navLinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navLinks.classList.remove('open'); burger.setAttribute('aria-expanded', false); });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.acc-q').forEach(function(q){
+    q.addEventListener('click', function(){
+      var item = q.parentElement;
+      var ans = item.querySelector('.acc-a');
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.acc-item.open').forEach(function(o){
+        o.classList.remove('open'); o.querySelector('.acc-a').style.maxHeight = null;
+      });
+      if(!isOpen){ item.classList.add('open'); ans.style.maxHeight = ans.scrollHeight + 'px'; }
+    });
+  });
+
+  // Scroll reveal
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:0.12 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  // Year
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
